@@ -17,11 +17,9 @@ def txtToString(file): # takes in a file and returns the contents as a string
 def frequency_analyzer(str):
     dict = {}
     for c in str:
-        if (c >= 'a' and c <= 'z') or (c >= 'A' and c <= 'Z'):
-            c = c.lower()
-        
+
         if(dict.get(c) != None):
-                dict[c] +=1
+            dict[c] += 1
         else:
             dict[c] = 1
     
@@ -30,8 +28,6 @@ def frequency_analyzer(str):
 def decode(str, shift):
         decoded = ""
         for c in str:
-            if (c >= 'a' and c <= 'z') or (c >= 'A' and c <= 'Z'):
-                c = c.lower()
             
             if ALPHABET.find(c) != -1:
                 decoded += ALPHABET[(ALPHABET.find(c) + shift) % len(ALPHABET)]
@@ -48,4 +44,3 @@ def decode(str, shift):
 for i in range(1, len(ALPHABET)):
     print("Shift: " + str(i))
     print(decode(txtToString("ciphertext-1.txt"), i))
-    

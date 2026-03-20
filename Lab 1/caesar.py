@@ -5,25 +5,15 @@
 
 
 # the alphabet
-ALPHABET = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789`~!@#$%^&*()-_=+[{]}\\|;:'\",<.>/? "
+ALPHABET = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789`~!@#$%^&*()-_=+[{]}\|;:'\",<.>/? "
 
-def txtToString(file): # takes in a file and returns the contents as a string
-    f = open(file, "r") # opens the file in read mode
-    str = f.read()
-    
-    f.close()
-    return str
+ciphertext = input("Enter the cipher text: ")
 
-def frequency_analyzer(str):
-    dict = {}
-    for c in str:
 
-        if(dict.get(c) != None):
-            dict[c] += 1
-        else:
-            dict[c] = 1
-    
-    return dict
+def loadDict(file):
+     with open(file, 'r') as f:
+          return set(word.strip().lower() for word in f)
+     
 
 def decode(str, shift):
         decoded = ""
@@ -34,16 +24,29 @@ def decode(str, shift):
             else:
                 decoded += c
         return decoded
-     
 
-    #return the sorted version 
-#     # return sorted(dict.items(), key=lambda x:x[1],reverse=True)
-# print(txtToString("ciphertext-1.txt"))
-# print(sorted(frequency_analyzer(txtToString("ciphertext-1.txt")).items(), key=lambda x:x[1],reverse=True))
+def isValid(str, dictionary):
+    words = str.split()
+    if not words:
+        return False
 
-# for i in range(1, len(ALPHABET)):
-#     print("Shift: " + str(i))
-#     print(decode(txtToString("ciphertext-3-1.txt"), i))
+    valid = 0
+    for w in words:
+         w_clean = ''.join(ch for ch in w if ch.isalpha()).lower()
+         if w_clean in dictionary:
+              valid += 1
 
-print(decode(txtToString("ciphertext-1.txt"), 82)) # ciphertext 1 is shift 82
-print(decode(txtToString("ciphertext-2.txt"), 8)) # ciphertext 2 is shift 8
+    return valid / len(words) > 0.5
+
+dictionary = loadDict("dictionary.txt")
+
+
+# try all possible shifts and check if the decoded text is valid
+for shift in range(len(ALPHABET)):
+     candidate = decode(ciphertext, shift)
+
+     if isValid(candidate, dictionary):
+        print(f"Likely shift: {shift}")
+        print(f"Decoded text: {candidate}")
+        break
+else: print("This shi broke ;-;")

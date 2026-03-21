@@ -9,30 +9,33 @@ import sys
 # the alphabet
 ALPHABET = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789`~!@#$%^&*()-_=+[{]}\\|;:'\",<.>/? "
 ALPHABET_3 = " -,;:!?/.'\"()[]$&#%012345789aAbBcCdDeEfFgGhHiIjJkKlLmMnNoOpPqQrRsStTuUvVwWxyYzZ" # used on ciphertext3
+DICTIONARY = {}
 
-# STEP 1: read stdin as a string
 def txtToString(infile):
     str = ""
     for line in infile:
         str += line
     return str
 
-# STEP 2: get a workable dictionary
 def setUpCipherDictionary(str):
-    resultingDict = {}
     for i in range(len(str)):
-        resultingDict[str[i]] = i
-    return resultingDict
+        DICTIONARY[str[i]] = i
 
-# STEP 3: convert cipher into numbers
-def cipherToNumber(ciphertext, dictionary):
+def cipherToNumber(ciphertext):
     result = []
     for i in ciphertext:
-        if i in dictionary:
-            result.append(dictionary[i])
+        if i in DICTIONARY:
+            result.append(DICTIONARY[i])
         else:
             result.append(i)
     return result
+
+def rotate(numArray, rotation):
+    dictLen = len(DICTIONARY)
+    for i in range(0, len(numArray)):
+        if isinstance(numArray[i], int):
+            numArray[i] = (int(numArray[i]) + rotation) % dictLen
+    return numArray
 
 def frequency_analyzer(str):
     dict = {}
@@ -46,19 +49,13 @@ def frequency_analyzer(str):
             dict[c] = 1
     
     return dict
-
-    #return the sorted version 
-#     # return sorted(dict.items(), key=lambda x:x[1],reverse=True)
-# print(txtToString("ciphertext-1.txt"))
-# print(sorted(frequency_analyzer(txtToString("ciphertext-1.txt")).items(), key=lambda x:x[1],reverse=True))
-
-# for i in range(1, len(ALPHABET)):
-    # print("Shift: " + str(i))
-    # print(decode(txtToString("ciphertext-1.txt"), i))
     
-
 if __name__ == '__main__':
+    # setup text to be decoded
+    setUpCipherDictionary(ALPHABET)
     Ciphertext = txtToString(sys.stdin)
-    CipherDictionary = setUpCipherDictionary(ALPHABET)
-    ConvertedCiphertext = cipherToNumber(Ciphertext, CipherDictionary)
+
+    # decode the text
+    ConvertedCiphertext = cipherToNumber(Ciphertext)
     print(ConvertedCiphertext)
+    print(rotate(ConvertedCiphertext, 3))

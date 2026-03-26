@@ -1,6 +1,6 @@
 # Le Chiffre
 # Team Name: Borq
-# Members:
+# Members: Hailey Allman, Sadie Ann, Blair Borque, McKinley Humble, Isaiah Thigpen
 # A program that attempts to solve cipher texts that are shifted by some number.
 # For the thresholds, we were able to get ciphertext-1= , ciphertext-2= , ciphertext-3= , ciphertext-4= , and the doubly encrypted=
 

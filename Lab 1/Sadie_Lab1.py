@@ -43,7 +43,7 @@ def rotate(numArray, rotation):
     rotatedText = ""
     for i in range(len(numArray)):
         if isinstance(numArray[i], int):
-            rotatedIndex = (numArray[i] + rotation) % dictLen
+            rotatedIndex = (numArray[i] - rotation + dictLen) % dictLen
             rotatedText += REVERSE_DICT[rotatedIndex]
         else:
             rotatedText += numArray[i]

@@ -10,6 +10,8 @@ import sys
 ALPHABET = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789`~!@#$%^&*()-_=+[{]}\\|;:'\",<.>/? "
 ALPHABET_3 = " -,;:!?/.'\"()[]$&#%012345789aAbBcCdDeEfFgGhHiIjJkKlLmMnNoOpPqQrRsStTuUvVwWxyYzZ" # used on ciphertext3
 DICTIONARY = {}
+REVERSE_DICT = {}
+COMMON_WORDS = []
 
 def txtToString(infile):
     str = ""
@@ -20,6 +22,12 @@ def txtToString(infile):
 def setUpCipherDictionary(str):
     for i in range(len(str)):
         DICTIONARY[str[i]] = i
+        REVERSE_DICT[i] = str[i]
+
+def setUpCommonWords(dictionaryFile):
+    commonWordString = txtToString(open(dictionaryFile, 'r'))
+    result = commonWordString.split()
+    return result
 
 def cipherToNumber(ciphertext):
     result = []
@@ -32,30 +40,35 @@ def cipherToNumber(ciphertext):
 
 def rotate(numArray, rotation):
     dictLen = len(DICTIONARY)
-    for i in range(0, len(numArray)):
+    rotatedText = ""
+    for i in range(len(numArray)):
         if isinstance(numArray[i], int):
-            numArray[i] = (int(numArray[i]) + rotation) % dictLen
-    return numArray
-
-def frequency_analyzer(str):
-    dict = {}
-    for c in str:
-        if (c >= 'a' and c <= 'z') or (c >= 'A' and c <= 'Z'):
-            c = c.lower()
-        
-        if(dict.get(c) != None):
-                dict[c] +=1
+            rotatedIndex = (numArray[i] + rotation) % dictLen
+            rotatedText += REVERSE_DICT[rotatedIndex]
         else:
-            dict[c] = 1
-    
-    return dict
-    
+            rotatedText += numArray[i]
+    return rotatedText
+
+def frequencyAnalyzer(decrypted):
+    testing = decrypted.lower().split(' ')
+    score = 0
+    for i in testing:
+        if i in COMMON_WORDS: score += 1 
+    if score > (len(testing) / 50): return True
+    else: return False
+
 if __name__ == '__main__':
     # setup text to be decoded
-    setUpCipherDictionary(ALPHABET)
+    setUpCipherDictionary(ALPHABET_3)
     Ciphertext = txtToString(sys.stdin)
+    COMMON_WORDS = setUpCommonWords("./dictionary.txt")
 
     # decode the text
     ConvertedCiphertext = cipherToNumber(Ciphertext)
-    print(ConvertedCiphertext)
-    print(rotate(ConvertedCiphertext, 3))
+    rotations = 1
+    while True:
+        workingText = rotate(ConvertedCiphertext, rotations)
+        rotations = rotations + 1
+        if (frequencyAnalyzer(workingText)):
+            break
+    print("Found text:", workingText, "\nrotations:", rotations)

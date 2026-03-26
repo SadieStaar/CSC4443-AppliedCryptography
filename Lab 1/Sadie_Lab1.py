@@ -59,16 +59,16 @@ def frequencyAnalyzer(decrypted):
 
 if __name__ == '__main__':
     # setup text to be decoded
-    setUpCipherDictionary(ALPHABET_3)
+    setUpCipherDictionary(ALPHABET)
     Ciphertext = txtToString(sys.stdin)
     COMMON_WORDS = setUpCommonWords("./dictionary.txt")
 
     # decode the text
     ConvertedCiphertext = cipherToNumber(Ciphertext)
-    rotations = 1
+    rotations = 0
     while True:
-        workingText = rotate(ConvertedCiphertext, rotations)
         rotations = rotations + 1
+        workingText = rotate(ConvertedCiphertext, rotations)
         if (frequencyAnalyzer(workingText)):
             break
-    print("Found text:", workingText, "\nrotations:", rotations)
+    print("Shift of " + str(rotations) + ":\n" + workingText )

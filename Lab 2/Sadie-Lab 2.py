@@ -2,41 +2,39 @@
 # Team Name: Borq
 # Members: Hailey Allman, Sadie Ann, Blair Borque, McKinley Humble, Isaiah Thigpen
 # A program that attempts to solve cipher texts that are shifted by some number.
-# For the thresholds, we were able to get ciphertext-1= , ciphertext-2= , ciphertext-3= , ciphertext-4= , and the doubly encrypted=
+# For the thresholds, we were able to get ciphertext-1=Byzantine , ciphertext-2=Cthulhu's , ciphertext-3=uncharacteristically , ciphertext-4=paperclips , and the doubly encrypted=heartburn
 
 # most of this code was ripped from Lab 1, as vignere and caesar are very similar
 import sys
 
-# GLOBAL VARIABLES
+# the alphabet
 ALPHABET = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789`~!@#$%^&*()-_=+[{]}\\|;:'\",<.>/? "
-ALPHABET_3 = ""
+ALPHABET_3 = " -,;:!?/.'\"()[]$&#%012345789aAbBcCdDeEfFgGhHiIjJkKlLmMnNoOpPqQrRsStTuUvVwWxyYzZ"
 DICTIONARY = {}
 REVERSE_DICT = {}
 POTENTIAL_KEYS = []
 COMMON_WORDS = []
 
-# TEXT TO STRING: turns a file input into a string
 def txtToString(infile):
     str = ""
     for line in infile:
         str += line
     return str
 
-# SET UP CIPHER DICTIONARY: sets up a dictionary with the characters of the chosen alphabet and their values
-# also sets up a reverse dictionary for easier, less iterative-y translation back
 def setUpCipherDictionary(str):
     for i in range(len(str)):
         DICTIONARY[str[i]] = i
         REVERSE_DICT[i] = str[i]
 
-# SET UP COMMON WORDS: Takes a file and turns its contents into an array
-# used for both the frequency analyzer and the potential vignere keys
+def setUpKeyDictionary(str):
+    for i in range(len(str)):
+        POTENTIAL_KEYS.append(i)
+
 def setUpCommonWords(dictionaryFile):
     commonWordString = txtToString(open(dictionaryFile, 'r'))
     result = commonWordString.split()
     return result
 
-# CIPHER TO NUMBER: converts the characters of a ciphertext to the alphabets' values
 def cipherToNumber(ciphertext):
     result = []
     for i in ciphertext:
@@ -46,7 +44,6 @@ def cipherToNumber(ciphertext):
             result.append(i)
     return result
 
-# VIGENERE: similar to the rotation from Lab 1, but has a dynamically shifting rotation value
 def vignere(ciphertextArray, keyArray):
     rotatedText = ""
     cipherPlace = 0
@@ -55,8 +52,6 @@ def vignere(ciphertextArray, keyArray):
     try:
         while True:
             if isinstance(ciphertextArray[cipherPlace], int):
-                # rotate (add) the key's value, then shift the key over (since that spot is used
-                # also makes sure the key loops back when it's reached the end
                 rotatedIndex = (ciphertextArray[cipherPlace] - keyArray[keyPlace] + dictlen) % dictlen
                 rotatedText += REVERSE_DICT[rotatedIndex]
                 keyPlace = (keyPlace + 1) % len(keyArray)
@@ -67,29 +62,25 @@ def vignere(ciphertextArray, keyArray):
     except IndexError:
         return rotatedText
 
-# FREQUENCY ANALYZER: checks if the deciphered text could be plaintext by comparing it to some known words
 def frequencyAnalyzer(decrypted):
     testing = decrypted.lower().split(' ')
     score = 0
     for i in testing:
         if i in COMMON_WORDS: score += 1 
-    if score > (len(testing) / 50): return True
+    if score > (len(testing) / 3): return True
     else: return False
 
-# MAIN
 if __name__ == '__main__':
     # setup text to be decoded
-    setUpCipherDictionary(ALPHABET)
+    setUpCipherDictionary(ALPHABET_3)
     Ciphertext = txtToString(sys.stdin)
     COMMON_WORDS = setUpCommonWords("./dictionary.txt")
     POTENTIAL_KEYS = setUpCommonWords("./dictionary-1.txt")
 
     # decode the text
     ConvertedCiphertext = cipherToNumber(Ciphertext)
-    testingKey = 0
-    while True:
-        workingText = vignere(ConvertedCiphertext, cipherToNumber(POTENTIAL_KEYS[testingKey]))
-        if (frequencyAnalyzer(workingText)):
+    for key in POTENTIAL_KEYS:
+        workingText = vignere(ConvertedCiphertext, cipherToNumber(key))
+        if frequencyAnalyzer(workingText):
+            print("KEY="+ key + "\n" + workingText)
             break
-        testingKey += 1
-    print("Found text:", workingText, "\nkey:", POTENTIAL_KEYS[testingKey])

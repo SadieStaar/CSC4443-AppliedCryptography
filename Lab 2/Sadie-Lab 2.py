@@ -72,7 +72,7 @@ def frequencyAnalyzer(decrypted):
 
 if __name__ == '__main__':
     # setup text to be decoded
-    setUpCipherDictionary(ALPHABET_3)
+    setUpCipherDictionary(ALPHABET)
     Ciphertext = txtToString(sys.stdin)
     COMMON_WORDS = setUpCommonWords("./dictionary.txt")
     POTENTIAL_KEYS = setUpCommonWords("./dictionary-1.txt")
